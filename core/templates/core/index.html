@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<style>
+    .jwi-index-brand { font-size: 3.5rem; font-weight: 700; }
+    .cinema-red-text { color: var(--cinema-red); }
+    .jwi-index-subtitle { color: #6c757d; font-size: 1.25rem; font-weight: 400; }
+
+    .movie-card {
+        border-width: 2px !important;
+        border-style: solid !important;
+        border-radius: 12px;
+        transition: box-shadow 0.3s ease;
+    }
+    .movie-card:hover {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; 
+    }
+
+    .border-rating-excellent { border-color: #28a745 !important; } /* คะแนน >= 9.0 (สีเขียว) */
+    .border-rating-good { border-color: #ffc107 !important; }      /* คะแนน >= 7.0 (สีเหลือง) */
+    .border-rating-low { border-color: #dc3545 !important; }       /* คะแนน < 7.0 (สีแดง) */
+
+    .img-container { overflow: hidden; border-radius: 12px 12px 0 0; }
+    .card-img-top { height: 350px; object-fit: cover; }
+
+    .rating-badge { z-index: 10; font-size: 0.8rem; letter-spacing: 0.5px; border-radius: 4px; }
+    .rating-badge i { color: #ffc107; margin-right: 3px; }
+
+    .movie-card-title { font-size: 1.1rem; color: #333; }
+    .genre-section { color: #888; font-size: 0.85rem; }
+    .genre-icon { color: #aaa; margin-right: 5px; }
+    .author-section { color: #888; font-size: 0.85rem; }
+</style>
+
+<div class="container mt-4 mb-5">
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <h1 class="jwi-index-brand">JWI <span class="cinema-red-text">CINEMA</span></h1>
+            <p class="jwi-index-subtitle mt-2">รวมที่สุดของภาพยนตร์ที่คุณไม่ควรพลาด บันทึกทุกความประทับใจไปกับเรา</p>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for movie in movies.items %}
+            <div class="col">
+                <div class="card h-100 shadow-sm movie-card 
+                            {% if movie.rating >= 9.0 %} border-rating-excellent 
+                            {% elif movie.rating >= 7.0 %} border-rating-good 
+                            {% else %} border-rating-low {% endif %}">
+                    
+                    <div class="position-relative img-container">
+                        <img src="{{ url_for('static', filename='movie_pics/' ~ movie.image_file) }}" class="card-img-top" alt="{{ movie.title }}">
+                        <div class="position-absolute top-0 end-0 m-2 badge bg-dark text-light p-1 rounded rating-badge d-flex align-items-center">
+                            <i class="bi bi-star-fill"></i> {{ movie.rating | float }}
+                        </div>
+                    </div>
+                    
+                    <div class="card-body d-flex flex-column pt-3 pb-2 px-3">
+                        <h5 class="card-title movie-card-title fw-bold text-truncate" title="{{ movie.title }}">{{ movie.title }}</h5>
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <span class="genre-section d-flex align-items-center">
+                                <i class="bi bi-tag-fill genre-icon"></i>
+                                {{ movie.genre }}
+                            </span>
+                            <span class="author-section small text-muted">โดย {{ movie.author.username }}</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="card-footer bg-transparent border-0 pb-3 pt-0 px-3">
+                        <a href="{{ url_for('movies.movie_detail', movie_id=movie.id) }}" class="btn btn-danger w-100" style="border-radius: 8px;">ดูรีวิวเต็มๆ</a>
+                    </div>
+                </div>
+            </div>
+            
+        {% else %}
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-film text-muted" style="font-size: 4rem;"></i>
+                <h4 class="text-muted mt-3">ไม่พบข้อมูลหนังที่คุณค้นหา 😢</h4>
+                <p class="text-muted">ลองใช้คำค้นหาอื่นดูอีกครั้งนะครับ</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if movies.pages > 1 %}
+    <div class="d-flex justify-content-center mt-5 mb-5">
+        {% for page_num in movies.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                {% if movies.page == page_num %}
+                    <a class="btn btn-danger mx-1" href="{{ url_for('core.index', page=page_num, search=search_query) }}">{{ page_num }}</a>
+                {% else %}
+                    <a class="btn btn-outline-secondary mx-1" href="{{ url_for('core.index', page=page_num, search=search_query) }}">{{ page_num }}</a>
+                {% endif %}
+            {% else %}
+                <span class="mx-2 text-muted align-self-end">...</span>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,68 @@
+<nav class="navbar navbar-expand-lg bg-body border-bottom fixed-top shadow-sm" style="min-height: 70px;">
+    <div class="container">
+        
+        <a class="navbar-brand fw-bold text-danger fs-4 me-4" href="{{ url_for('core.index') }}" style="letter-spacing: 1px;">
+            JWI CINEMA
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link text-body fw-medium" href="{{ url_for('core.index') }}">
+                        <i class="bi bi-house"></i> หน้าแรก
+                    </a>
+                </li>
+                {% if current_user.is_authenticated %}
+                <li class="nav-item ms-lg-3">
+                    <a class="nav-link text-body fw-medium" href="{{ url_for('movies.new_movie') }}">
+                        <i class="bi bi-plus-circle"></i> เพิ่มหนังใหม่
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+            
+            <form class="d-flex mx-auto my-2 my-lg-0" action="{{ url_for('core.index') }}" method="GET" style="width: 100%; max-width: 350px;">
+                <div class="input-group">
+                    <input class="form-control border-secondary-subtle bg-body-tertiary shadow-none" style="border-radius: 20px 0 0 20px;" type="search" name="search" placeholder="ค้นหาหนัง..." value="{% if request.args.get('search') %}{{ request.args.get('search') }}{% endif %}">
+                    <button class="btn border border-secondary-subtle border-start-0 bg-body-tertiary text-muted" style="border-radius: 0 20px 20px 0;" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+
+            <ul class="navbar-nav ms-auto align-items-center mt-3 mt-lg-0">
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-body fw-medium d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                            <img src="{{ url_for('static', filename='profile_pics/' ~ current_user.image_file) }}" class="rounded-circle me-2 border border-2 border-danger" style="width: 35px; height: 35px; object-fit: cover;">
+                            {{ current_user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm mt-2">
+                            <li><a class="dropdown-item py-2" href="{{ url_for('users.account') }}"><i class="bi bi-person me-2"></i> โปรไฟล์และสถิติ</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ url_for('users.change_password') }}"><i class="bi bi-key me-2"></i> เปลี่ยนรหัสผ่าน</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger py-2" href="{{ url_for('users.logout') }}"><i class="bi bi-box-arrow-right me-2"></i> ออกจากระบบ</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-body fw-medium me-3" href="{{ url_for('users.login') }}">เข้าสู่ระบบ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-danger fw-medium" style="border-radius: 6px; padding: 6px 20px;" href="{{ url_for('users.register') }}">สมัครสมาชิก</a>
+                    </li>
+                {% endif %}
+                
+                <li class="nav-item ms-lg-4 mt-2 mt-lg-0 border-start-lg ps-lg-3">
+                    <button class="btn btn-link text-body p-0 text-decoration-none fs-5" id="darkModeToggle" title="สลับโหมดมืด/สว่าง">
+                        <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

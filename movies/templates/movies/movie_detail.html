@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-md-10">
+        <div class="card border-0 shadow-sm overflow-hidden bg-white">
+            <div class="row g-0">
+                <div class="col-lg-4">
+                    <img src="{{ url_for('static', filename='movie_pics/' + movie.image_file) }}" 
+                         class="img-fluid w-100 h-100 shadow-sm" style="object-fit: cover; min-height: 450px;">
+                </div>
+                
+                <div class="col-lg-8 p-4 p-lg-5 d-flex flex-column">
+                    <div class="mb-auto">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h1 class="fw-bold text-dark mb-0">{{ movie.title }}</h1>
+                            <span class="badge bg-danger fs-5">{{ movie.rating }} <i class="bi bi-star-fill small text-warning"></i></span>
+                        </div>
+                        <p class="text-muted mb-4"><i class="bi bi-tags me-2"></i>ประเภท: <span class="badge bg-light text-dark border">{{ movie.genre or 'ทั่วไป' }}</span></p>
+                        
+                        <h5 class="fw-bold text-secondary small text-uppercase mb-2">บันทึกจากผู้โพสต์:</h5>
+                        <div class="p-3 bg-light rounded-3 border-start border-4 border-danger">
+                            <p class="mb-0 text-dark" style="white-space: pre-wrap;">{{ movie.note or 'ไม่มีบันทึกเพิ่มเติม' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 d-flex align-items-center justify-content-between border-top pt-4">
+                        <div class="d-flex align-items-center">
+                            <img src="{{ url_for('static', filename='profile_pics/' + movie.author.image_file) }}" 
+                                 class="rounded-circle me-3" style="width: 45px; height: 45px; object-fit: cover;">
+                            <span class="small text-muted fw-bold">{{ movie.author.nickname or movie.author.username }}</span>
+                        </div>
+
+                        <div class="gap-2 d-flex">
+                            <a href="{{ url_for('core.index') }}" class="btn btn-outline-secondary px-4">กลับ</a>
+                            
+                            {% if movie.author == current_user %}
+                                <a href="{{ url_for('movies.update_movie', movie_id=movie.id) }}" class="btn btn-warning px-4 fw-bold">แก้ไข</a>
+                                <button type="button" class="btn btn-danger px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#deleteModal">ลบ</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if movie.author == current_user %}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white border-0">
+                <h5 class="modal-title fw-bold text-white">ยืนยันการลบหนัง</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <i class="bi bi-exclamation-triangle-fill text-danger mb-3" style="font-size: 3rem;"></i>
+                <h4 class="fw-bold">คุณแน่ใจหรือไม่?</h4>
+                <p class="text-muted">กำลังจะลบหนังเรื่อง <strong class="text-danger">"{{ movie.title }}"</strong> ข้อมูลจะหายถาวร!</p>
+            </div>
+            <div class="modal-footer border-0 bg-light d-flex justify-content-center py-3">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">ยกเลิก</button>
+                <form action="{{ url_for('movies.delete_movie', movie_id=movie.id) }}" method="POST">
+                    <button type="submit" class="btn btn-danger px-4 fw-bold">ยืนยันลบ</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
