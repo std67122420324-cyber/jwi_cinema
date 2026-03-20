@@ -8,7 +8,7 @@ from models import Movie
 movies_bp = Blueprint('movies', __name__, template_folder='templates')
 
 def save_movie_picture(form_picture):
-    random_hex = secrets.token_hex(8)
+    random_hex = secrets.token_hex(6)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
     picture_path = os.path.join(current_app.root_path, 'static/movie_pics', picture_fn)
